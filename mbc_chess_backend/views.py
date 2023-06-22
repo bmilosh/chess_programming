@@ -1,4 +1,7 @@
 import json
+import os
+import stat
+import sys
 
 import chess
 import chess.engine
@@ -6,8 +9,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# engine = chess.engine.SimpleEngine.popen_uci('./dist/MBC/MBC.exe')
-engine = chess.engine.SimpleEngine
+# engine = chess.engine.SimpleEngine
+engine = None
 
 @api_view(["POST"])
 def make_move(request):
@@ -17,15 +20,7 @@ def make_move(request):
     limit = body["searchTimeLimit"]
 
     board = chess.Board(fen=fen)
-    # print(request.__dir__())
-    # limit = request.GET.get("searchTimeLimit", "")
-    # print(f"{limit = }")
     result = engine.play(board, chess.engine.Limit(time=float(limit)))
-    # try:
-    #     result = engine.play(board, chess.engine.Limit(time=float(limit)))
-    # except:
-    #     limit = request.POST.get("searchTimeLimit", "")
-    #     result = engine.play(board, chess.engine.Limit(time=float(limit)))
     best_move = result.move
     body["san"] = board.san(best_move)
     body["best_move"] = board.lan(best_move)
