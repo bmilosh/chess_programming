@@ -1,0 +1,32 @@
+{
+  "name": "chess_programming",
+  "version": "1.0.0",
+  "description": "Follows tutorial in [https://www.youtube.com/playlist?list=PLmN0neTso3Jxh8ZIylk74JpwfiWNI76Cs]this video.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack --mode development --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.4",
+    "@babel/preset-react": "^7.22.3",
+    "babel-loader": "^9.1.2",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "dependencies": {
+    "chess.js": "^1.0.0-beta.6",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-chessboard": "^2.1.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.12.1",
+    "uuid": "^9.0.0"
+  }
+}

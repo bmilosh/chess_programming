@@ -1,0 +1,12 @@
+__pycache__/
+
+build/
+dist/
+node_modules/
+venv/
+
+db.sqlite3
+
+*.spec
+
+.env
