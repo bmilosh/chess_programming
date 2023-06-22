@@ -55,5 +55,10 @@ def kill_engine(request):
 def start_engine(request):
     # print("Start engine called")
     global engine
-    engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist/MBC/MBC.exe')
+    if sys.platform == "linux":
+        os.chmod('./chess_engine/dist/MBC/MBC.exe', stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist/MBC/MBC.exe')
+    else:
+        engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/MBC.exe')
+    # engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist/MBC/MBC.exe')
     return Response(json.dumps({"message": "Engine started successfully"}))
