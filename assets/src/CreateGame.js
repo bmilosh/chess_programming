@@ -68,7 +68,7 @@ const CreateGame = ({
 
     useEffect(() => {
         if (gameId) {
-            navigate(`/api/play/${gameId}/`)
+            navigate(`/play/${gameId}/`)
             // window.location.reload()
         }
     }, [gameId])

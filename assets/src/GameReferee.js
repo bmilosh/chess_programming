@@ -144,8 +144,9 @@ const GameReferee = ({
           setComputerTurn(false)
           return
         }
+		let fen = game.fen()
 
-        let response = await fetch('/api/test_play/', {
+        let response = await fetch(`/api/make_move/`, { //fen=${fen}&?searchTimeLimit=${Number(searchTimeLimit)}
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

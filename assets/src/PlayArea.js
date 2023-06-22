@@ -115,7 +115,7 @@ const PlayArea = ({
     // Using this to kill the MBC engine.
     let endGameSession = async () => {
         timerWorker.postMessage("kill")
-        let response = await fetch('/api/quit/', {
+        let response = await fetch('/api/quit', {
           method: 'GET',
         })
         let data = await response.json()
@@ -125,7 +125,8 @@ const PlayArea = ({
 
     // Using this to start the MBC engine.
     let startEngine = async () => {
-        let response = await fetch('/api/start_engine/', {
+        console.log("We're starting the engine")
+        let response = await fetch('/api/start_engine', {
           method: 'GET',
         })
         let data = await response.json()
@@ -156,7 +157,7 @@ const PlayArea = ({
     function startNewGame () {
         timerWorker.postMessage("kill")
         setCreatingGame(true)
-        navigate('/api/')  
+        navigate('/')  
     }
 
 return (
@@ -167,7 +168,7 @@ return (
             {/* <div id='board-and-clock'> */}
                 {/* board and fen starts */}
                 <div className='board'>
-                    <Link to={'/api/'}>
+                    <Link to={'/'}>
                         <button className='clock try' onClick={() => endGameSession()}>
                             Quit
                         </button>

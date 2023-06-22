@@ -9,7 +9,7 @@ const App = () => {
     let [orientation, setOrientation] = useState(null) // white by default
     const router = createBrowserRouter([
         {
-            path: "/api/play/:gameId",
+            path: "/play/:gameId",
             element: <PlayArea 
                         setCreatingGame={setCreatingGame} 
                         orientation={orientation}
@@ -17,11 +17,11 @@ const App = () => {
             errorElement: <ErrorComponent />,
         },
         {
-            path: "/api/*",
+            path: "/*",
             element: <ErrorComponent />,
         },
         {
-            path: "/api/",
+            path: "/",
             element: <Landing 
                         creatingGame={creatingGame} 
                         setCreatingGame={setCreatingGame}

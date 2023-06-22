@@ -17,7 +17,15 @@ def make_move(request):
     limit = body["searchTimeLimit"]
 
     board = chess.Board(fen=fen)
+    # print(request.__dir__())
+    # limit = request.GET.get("searchTimeLimit", "")
+    # print(f"{limit = }")
     result = engine.play(board, chess.engine.Limit(time=float(limit)))
+    # try:
+    #     result = engine.play(board, chess.engine.Limit(time=float(limit)))
+    # except:
+    #     limit = request.POST.get("searchTimeLimit", "")
+    #     result = engine.play(board, chess.engine.Limit(time=float(limit)))
     best_move = result.move
     body["san"] = board.san(best_move)
     body["best_move"] = board.lan(best_move)
