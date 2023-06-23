@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 # Enable debug logging.
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename="./chess_engine/engine_logs.log",level=logging.DEBUG)
 
 # engine = chess.engine.SimpleEngine
 engine = None
@@ -63,7 +63,10 @@ def kill_engine(request):
 def start_engine(request):
     global engine
     if sys.platform == "linux":
+        # os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
         os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        statinfo = os.stat('./chess_engine/dist/MBC/MBC')
+        # print(statinfo)
         engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist/MBC/MBC')
     else:
         engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist1/MBC/MBC.exe')
