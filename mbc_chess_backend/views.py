@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 # Enable debug logging.
-logging.basicConfig(filename="./chess_engine/engine_logs.log",level=logging.DEBUG)
+logging.basicConfig(filename="./chess_engine/engine_logs.log",level=logging.DEBUG, stream=sys.stdout)
 
 # engine = chess.engine.SimpleEngine
 engine = None
