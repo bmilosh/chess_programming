@@ -7,7 +7,7 @@ const InvalidGameId = () => {
   return (
     <div id='invalid-game-id'>
         <div >
-            This game id is not valid. Please create a new game <a href='/api/'>here</a>.
+            This game id is not valid. Please create a new game <a href='/'>here</a>.
         </div>
     </div>
   )

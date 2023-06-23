@@ -60,7 +60,7 @@ def start_engine(request):
     # print("Start engine called")
     global engine
     if sys.platform == "linux":
-        os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        # os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist/MBC/MBC')
     else:
         engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist1/MBC/MBC.exe')
