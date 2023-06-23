@@ -1,5 +1,3 @@
-import ctypes
-import msvcrt
 import select
 import sys
 import time
@@ -7,6 +5,9 @@ import time
 import config
 from evaluation import negamax, score_move
 
+if sys.platform == "win32":
+    import ctypes
+    import msvcrt
 
 def get_time_ms():
     return int(time.perf_counter() * 1000)

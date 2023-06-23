@@ -14,6 +14,8 @@ engine = None
 
 @api_view(["POST"])
 def make_move(request):
+    if engine is None:
+        return Response(json.dumps({"message": "Engine not running. Cannot make move."}))
     body = json.loads(request.body)
     # Extract relevant info from body
     fen = body["fen"]
@@ -46,7 +48,9 @@ def kill_engine(request):
     # print("Kill engine called")
     try:
         engine.quit()
-    except chess.engine.EngineTerminatedError:
+        engine.close()
+    # except chess.engine.EngineTerminatedError:
+    except:
         return Response(json.dumps({"message": "Engine already killed"}))
     return Response(json.dumps({"message": "Engine successfully killed"}))
 

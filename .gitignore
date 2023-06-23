@@ -1,6 +1,7 @@
 __pycache__/
 
 build/
+build1/
 node_modules/
 venv/
 myenv/

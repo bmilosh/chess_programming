@@ -75,6 +75,7 @@ function startTimer(colour) {
 self.onmessage = function (event) {
     // console.log("message from main thread:", event.data)
     if (event.data === "kill") {
+		// console.log(event.data)
         clearInterval(timerIntervals)
     }
     else if (event.data.initial) {

@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { someGameInitials } from './CreateGame.js';
 import GameReferee from './GameReferee.js';
 import PGNArea from './PGNArea.js';
@@ -86,15 +86,20 @@ const PlayArea = ({
         // update local storage every second
         updateLocalStorage(event.data.whiteTime, event.data.blackTime, isGameOver)
         } else {
-            setIsGameOver(event.data)
-            // this update is primarily for the game status
-            updateLocalStorage(whiteTimeRem, blackTimeRem, event.data)
-            endGameSession()
+            if (!isGameOver) {
+
+                setIsGameOver(event.data)
+                // this update is primarily for the game status
+                updateLocalStorage(whiteTimeRem, blackTimeRem, event.data)
+                endGameSession()
+            }
         }
     }
 
     useEffect(() => {
         if (gameInfo){
+            // console.log("What about game info? initial:",gameInfo.initial)
+            if (isGameOver) return;
             startEngine();
             timerWorker.postMessage({
             initial: true,
@@ -112,9 +117,19 @@ const PlayArea = ({
         }
       }, [])
 
+      useEffect(() => {
+		if (isGameOver  ) {
+            // console.log("Did it change at some point during the reload")
+            console.log(isGameOver)
+			timerWorker.postMessage("kill")
+			setOptionSquares({})
+            endGameSession()
+		}
+	}, [isGameOver])
+
     // Using this to kill the MBC engine.
     let endGameSession = async () => {
-        timerWorker.postMessage("kill")
+        if (!isGameOver) timerWorker.postMessage("kill")
         let response = await fetch('/api/quit', {
           method: 'GET',
         })
@@ -144,6 +159,7 @@ const PlayArea = ({
       }
 
     function resignGame () {
+        // endGameSession()
         setIsGameOver(`Game over. ${humanColour} resigns. ${computerColour} wins.`)
         const retrievedGameInfo = JSON.parse(localStorage.getItem(gameId))
         let updatedInfo = {
@@ -151,11 +167,26 @@ const PlayArea = ({
             gameStatus: `Game over. ${humanColour} resigns. ${computerColour} wins.`
         }
         localStorage.setItem(gameId, JSON.stringify(updatedInfo))
-        timerWorker.postMessage("kill")
+        // timerWorker.postMessage("kill")
+    }
+
+    function quitGame () {
+        // endGameSession()
+        setIsGameOver(`Game terminated.`)
+        const retrievedGameInfo = JSON.parse(localStorage.getItem(gameId))
+        let updatedInfo = {
+            ...retrievedGameInfo,
+            gameStatus: `Game terminated.`
+        }
+        localStorage.setItem(gameId, JSON.stringify(updatedInfo))
+        // timerWorker.postMessage("kill")
+        if (computerTurn) endGameSession()
+        navigate('/')
     }
 
     function startNewGame () {
-        timerWorker.postMessage("kill")
+        endGameSession()
+        // timerWorker.postMessage("kill")
         setCreatingGame(true)
         navigate('/')  
     }
@@ -168,11 +199,11 @@ return (
             {/* <div id='board-and-clock'> */}
                 {/* board and fen starts */}
                 <div className='board'>
-                    <Link to={'/'}>
-                        <button className='clock try' onClick={() => endGameSession()}>
+                    {/* <Link to={'/'}> */}
+                        <button className='clock try' onClick={() => quitGame()}>
                             Quit
                         </button>
-                    </Link>
+                    {/* </Link> */}
                     <div className='clock clock-top'>
                         {boardOrientation === 'white' ? (
                         String(blackTimeRem.min).padStart(2,0) + ":" + String(blackTimeRem.secs).padStart(2,0) // + '.' + String(blackTimeRem.milSecs).padStart(2,0)
