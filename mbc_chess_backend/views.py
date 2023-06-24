@@ -17,13 +17,14 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 # engine = None
 
 if sys.platform == "linux":
+    # PyInstaller seems to need `write` permissions in addition to
+    # `read` and `execute` when we're in Heroku. So here we go.
     os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+    PATH_TO_ENGINE = './chess_engine/dist/MBC/MBC'
     # os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    # statinfo = os.stat('./chess_engine/dist/MBC/MBC')
-    # print(statinfo)
-    engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist/MBC/MBC')
 else:
-    engine = chess.engine.SimpleEngine.popen_uci('./chess_engine/dist1/MBC/MBC.exe')
+    PATH_TO_ENGINE = './chess_engine/dist1/MBC/MBC.exe'
+
 # python3 manage.py runserver 8080
 @api_view(["POST"])
 def make_move(request):
@@ -37,7 +38,9 @@ def make_move(request):
     board = chess.Board(fen=fen)
     # result = engine.play(board, chess.engine.Limit(time=float(limit)))
     # best_move = result.move
-    result = engine.analyse(board, chess.engine.Limit(time=float(limit)))
+    with chess.engine.SimpleEngine.popen_uci(PATH_TO_ENGINE) as engine:
+        result = engine.analyse(board, chess.engine.Limit(time=float(limit)))
+    # result = engine.analyse(board, chess.engine.Limit(time=float(limit)))
     best_move = result["pv"][0]
     body["san"] = board.san(best_move)
     body["best_move"] = board.lan(best_move)
@@ -74,6 +77,8 @@ def kill_engine(request):
 def start_engine(request):
     # global engine
     # if sys.platform == "linux":
+    #     # PyInstaller seems to need `write` permissions in addition to
+    #     # `read` and `execute` when we're in Heroku. So here we go.
     #     os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
     #     # os.chmod('./chess_engine/dist/MBC/MBC', stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     #     statinfo = os.stat('./chess_engine/dist/MBC/MBC')

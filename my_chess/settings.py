@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG_ON")
+DEBUG = True if os.getenv("DJANGO_DEBUG_ON") == "True" else False
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "mb-chess-fcb92b9ccc46.herokuapp.com"]
 

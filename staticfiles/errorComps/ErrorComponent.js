@@ -5,7 +5,7 @@ const ErrorComponent = () => {
 	return (
 		<div className='error-parent'>
 			<div className='error-main'>
-				Something went wrong. Please create a new game <a href='/api/'>here</a>.
+				Something went wrong. Please create a new game <a href='/'>here</a>.
 			</div>
 		</div>
 	)

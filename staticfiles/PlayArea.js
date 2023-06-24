@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { someGameInitials } from './CreateGame.js';
 import GameReferee from './GameReferee.js';
 import PGNArea from './PGNArea.js';
@@ -86,16 +86,21 @@ const PlayArea = ({
         // update local storage every second
         updateLocalStorage(event.data.whiteTime, event.data.blackTime, isGameOver)
         } else {
-            setIsGameOver(event.data)
-            // this update is primarily for the game status
-            updateLocalStorage(whiteTimeRem, blackTimeRem, event.data)
-            endGameSession()
+            if (!isGameOver) {
+
+                setIsGameOver(event.data)
+                // this update is primarily for the game status
+                updateLocalStorage(whiteTimeRem, blackTimeRem, event.data)
+                // endGameSession()
+            }
         }
     }
 
     useEffect(() => {
         if (gameInfo){
-            startEngine();
+            // console.log("What about game info? initial:",gameInfo.initial)
+            if (isGameOver) return;
+            // startEngine();
             timerWorker.postMessage({
             initial: true,
             whiteTime: whiteTimeRem,
@@ -112,26 +117,37 @@ const PlayArea = ({
         }
       }, [])
 
-    // Using this to kill the MBC engine.
-    let endGameSession = async () => {
-        timerWorker.postMessage("kill")
-        let response = await fetch('/api/quit/', {
-          method: 'GET',
-        })
-        let data = await response.json()
-        // let jsondata = JSON.parse(data)
-        // console.log("response from api on quit:", jsondata)
-    }
+      useEffect(() => {
+		if (isGameOver  ) {
+            // console.log("Did it change at some point during the reload")
+            console.log(isGameOver)
+			timerWorker.postMessage("kill")
+			setOptionSquares({})
+            // endGameSession()
+		}
+	}, [isGameOver])
 
-    // Using this to start the MBC engine.
-    let startEngine = async () => {
-        let response = await fetch('/api/start_engine/', {
-          method: 'GET',
-        })
-        let data = await response.json()
-        // let jsondata = JSON.parse(data)
-        // console.log("response from api on engine start:", jsondata)
-    }
+    // // Using this to kill the MBC engine.
+    // let endGameSession = async () => {
+    //     if (!isGameOver) timerWorker.postMessage("kill")
+    //     let response = await fetch('/api/quit', {
+    //       method: 'GET',
+    //     })
+    //     let data = await response.json()
+    //     // let jsondata = JSON.parse(data)
+    //     // console.log("response from api on quit:", jsondata)
+    // }
+
+    // // Using this to start the MBC engine.
+    // let startEngine = async () => {
+    //     console.log("We're starting the engine")
+    //     let response = await fetch('/api/start_engine', {
+    //       method: 'GET',
+    //     })
+    //     let data = await response.json()
+    //     // let jsondata = JSON.parse(data)
+    //     // console.log("response from api on engine start:", jsondata)
+    // }
 
     function flipBoard () {
         if (boardOrientation === 'black') {
@@ -142,22 +158,43 @@ const PlayArea = ({
         }
       }
 
-    function resignGame () {
-        setIsGameOver(`Game over. ${humanColour} resigns. ${computerColour} wins.`)
-        const retrievedGameInfo = JSON.parse(localStorage.getItem(gameId))
-        let updatedInfo = {
-            ...retrievedGameInfo,
-            gameStatus: `Game over. ${humanColour} resigns. ${computerColour} wins.`
+    // function resignGame () {
+    //     // endGameSession()
+    //     setIsGameOver(`Game over. ${humanColour} resigns. ${computerColour} wins.`)
+    //     const retrievedGameInfo = JSON.parse(localStorage.getItem(gameId))
+    //     let updatedInfo = {
+    //         ...retrievedGameInfo,
+    //         gameStatus: `Game over. ${humanColour} resigns. ${computerColour} wins.`
+    //     }
+    //     localStorage.setItem(gameId, JSON.stringify(updatedInfo))
+    //     // timerWorker.postMessage("kill")
+    // }
+
+    function quitGame (message, shouldCreate = false, shouldNav = true) {
+        // endGameSession()
+        if (!isGameOver) {
+
+            setIsGameOver(message)
+            const retrievedGameInfo = JSON.parse(localStorage.getItem(gameId))
+            let updatedInfo = {
+                ...retrievedGameInfo,
+                gameStatus: message
+            }
+            localStorage.setItem(gameId, JSON.stringify(updatedInfo))
         }
-        localStorage.setItem(gameId, JSON.stringify(updatedInfo))
-        timerWorker.postMessage("kill")
+        // // timerWorker.postMessage("kill")
+        // if (computerTurn) endGameSession()
+        setCreatingGame(shouldCreate)
+        if (shouldNav) navigate('/')
     }
 
-    function startNewGame () {
-        timerWorker.postMessage("kill")
-        setCreatingGame(true)
-        navigate('/api/')  
-    }
+    // function startNewGame () {
+    //     // endGameSession()
+    //     setIsGameOver(`Game terminated.`)
+    //     // timerWorker.postMessage("kill")
+    //     setCreatingGame(true)
+    //     navigate('/')  
+    // }
 
 return (
     <>{gameInfo ? ( 
@@ -167,11 +204,11 @@ return (
             {/* <div id='board-and-clock'> */}
                 {/* board and fen starts */}
                 <div className='board'>
-                    <Link to={'/api/'}>
-                        <button className='clock try' onClick={() => endGameSession()}>
+                    {/* <Link to={'/'}> */}
+                        <button className='clock try' onClick={() => quitGame(`Game terminated.`)}>
                             Quit
                         </button>
-                    </Link>
+                    {/* </Link> */}
                     <div className='clock clock-top'>
                         {boardOrientation === 'white' ? (
                         String(blackTimeRem.min).padStart(2,0) + ":" + String(blackTimeRem.secs).padStart(2,0) // + '.' + String(blackTimeRem.milSecs).padStart(2,0)
@@ -226,7 +263,7 @@ return (
                         String(blackTimeRem.min).padStart(2,0) + ":" + String(blackTimeRem.secs).padStart(2,0) // + '.' + String(blackTimeRem.milSecs).padStart(2,0)
                         )}
                     </div> {/** clock-bottom ends */}
-                    <button className='clock try-bottom' onClick={() => startNewGame()}>
+                    <button className='clock try-bottom' onClick={() => quitGame(`Game terminated.`, true)}>
                         New Game
                     </button>
                     {/* board and fen ends */}
@@ -307,7 +344,9 @@ return (
                     {/* <div> */}
                     {isGameOver ? (<div className='game-status'>{isGameOver}</div>) : (
                         <div >
-                            <button className='resignBtn c-btn' onClick={(e) => resignGame()}>Resign</button>
+                            <button className='resignBtn c-btn' onClick={
+                                () => quitGame(`Game over. ${humanColour} resigns. ${computerColour} wins.`, false, false)
+                            }>Resign</button>
                         </div>
                     )}
                     {/* </div> */}

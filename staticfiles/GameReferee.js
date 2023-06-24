@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 import cloneDeep from 'lodash/cloneDeep';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 /**
@@ -40,6 +40,7 @@ const GameReferee = ({
 
     const colours = ['b', 'w']
 	const {gameId} = useParams()
+	const [jsonData, setJsonData] = useState(null)
 
     useEffect(() => {
           if (computerTurn) {
@@ -49,6 +50,13 @@ const GameReferee = ({
           } 
       }, [computerTurn])
 
+	useEffect(() => {
+		if (jsonData) {
+			completeMakeMove(jsonData)
+			setJsonData(null)
+		}
+	}, [jsonData])
+
     useEffect(() => {
         if (squareClicked) {
             onSquareClick(squareClicked)
@@ -56,11 +64,7 @@ const GameReferee = ({
         }
     }, [squareClicked])
 
-	useEffect(() => {
-		if (isGameOver) {
-			setOptionSquares({})
-		}
-	}, [isGameOver])
+	
 
 	useEffect(() => {
 		if (!isGameOver) {
@@ -144,8 +148,9 @@ const GameReferee = ({
           setComputerTurn(false)
           return
         }
+		// let fen = game.fen()
 
-        let response = await fetch('/api/test_play/', {
+        let response = await fetch(`/api/make_move/`, { //fen=${fen}&?searchTimeLimit=${Number(searchTimeLimit)}
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -160,8 +165,56 @@ const GameReferee = ({
 
         let data = await response.json()
         let jsondata = JSON.parse(data)
+
+		setJsonData(jsondata)
+
+		// completeMakeMove(jsondata)
         
-        const newFEN = jsondata["fen"]
+        // const newFEN = jsondata["fen"]
+        // const bestMove = jsondata["best_move"]
+        // const bestMoveSan = jsondata["san"]
+        // const squareFrom = jsondata["square_from"]
+        // const squareTo = jsondata["square_to"]
+        // const movenum = game.moveNumber();
+        // const ourColour = game.turn();
+        // let movePGN = ''
+
+        // if (isFirstMove) {
+        //   setIsFirstMove(false)
+        // }
+		// if (isGameOver) {
+		// 	setComputerTurn(false)
+		// 	return
+		//   }
+        // safeGameMutate((game) => {
+        //     game.move(bestMove);
+        //   });
+        //   movePGN += ourColour === 'b' ? bestMoveSan : movenum + '. ' + bestMoveSan
+        //   setComputerTurn((former) => former ^ 1)
+        //   setMoveCount((former) => former + 1)
+        //   fenStack.push({
+		// 	  'pgn': movePGN,
+		// 	  'fen': newFEN,
+		// 	  from: squareFrom,
+		// 	  to: squareTo
+		// 	})
+		// 	setFenStack(fenStack)
+		// 	const squares = {}; 
+		// 	squares[squareFrom.toLowerCase()] = {background: "rgba(155, 199, 0, 0.41)",};
+		// 	squares[squareTo.toLowerCase()] = {background: "rgba(155, 199, 0, 0.41)",};
+		// 	setMoveSquares(squares)
+		// 	setGame(new Chess(newFEN))
+  
+        //   startTimer(humanColour)
+    }
+
+	function completeMakeMove (jsondata){
+		// console.log("isgameover before placing computer move n board:", isGameOver)
+		if (isGameOver) {
+			setComputerTurn(false)
+			return
+		}
+		const newFEN = jsondata["fen"]
         const bestMove = jsondata["best_move"]
         const bestMoveSan = jsondata["san"]
         const squareFrom = jsondata["square_from"]
@@ -173,10 +226,7 @@ const GameReferee = ({
         if (isFirstMove) {
           setIsFirstMove(false)
         }
-		if (isGameOver) {
-			setComputerTurn(false)
-			return
-		  }
+		
         safeGameMutate((game) => {
             game.move(bestMove);
           });
@@ -197,7 +247,7 @@ const GameReferee = ({
 			setGame(new Chess(newFEN))
   
           startTimer(humanColour)
-    }
+	}
 
     function onSquareClick(square) {
         // setRightClickedSquares({}); // 1
