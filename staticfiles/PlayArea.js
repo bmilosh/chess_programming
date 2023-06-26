@@ -98,7 +98,6 @@ const PlayArea = ({
 
     useEffect(() => {
         if (gameInfo){
-            // console.log("What about game info? initial:",gameInfo.initial)
             if (isGameOver) return;
             // startEngine();
             timerWorker.postMessage({
@@ -110,7 +109,6 @@ const PlayArea = ({
             increment: Number(gameInfo.secondsIncrement),
             });
             setTimeout(() => {
-                // console.log("now setting computer turn")
                 setComputerTurn(game.turn() === computerColour[0])
                 
             }, 2000);
@@ -119,7 +117,6 @@ const PlayArea = ({
 
       useEffect(() => {
 		if (isGameOver  ) {
-            // console.log("Did it change at some point during the reload")
             console.log(isGameOver)
 			timerWorker.postMessage("kill")
 			setOptionSquares({})
@@ -158,18 +155,6 @@ const PlayArea = ({
         }
       }
 
-    // function resignGame () {
-    //     // endGameSession()
-    //     setIsGameOver(`Game over. ${humanColour} resigns. ${computerColour} wins.`)
-    //     const retrievedGameInfo = JSON.parse(localStorage.getItem(gameId))
-    //     let updatedInfo = {
-    //         ...retrievedGameInfo,
-    //         gameStatus: `Game over. ${humanColour} resigns. ${computerColour} wins.`
-    //     }
-    //     localStorage.setItem(gameId, JSON.stringify(updatedInfo))
-    //     // timerWorker.postMessage("kill")
-    // }
-
     function quitGame (message, shouldCreate = false, shouldNav = true) {
         // endGameSession()
         if (!isGameOver) {
@@ -182,19 +167,10 @@ const PlayArea = ({
             }
             localStorage.setItem(gameId, JSON.stringify(updatedInfo))
         }
-        // // timerWorker.postMessage("kill")
-        // if (computerTurn) endGameSession()
         setCreatingGame(shouldCreate)
         if (shouldNav) navigate('/')
     }
 
-    // function startNewGame () {
-    //     // endGameSession()
-    //     setIsGameOver(`Game terminated.`)
-    //     // timerWorker.postMessage("kill")
-    //     setCreatingGame(true)
-    //     navigate('/')  
-    // }
 
 return (
     <>{gameInfo ? ( 
