@@ -150,6 +150,7 @@ In case there's a problem with the second step above for unix, macOS or windows 
 
 ## To-Do
 
-- Detect three-fold repetitions.
-- Add ability to create users.
-- Add ability for human-to-human games.
+- [ ] Detect three-fold repetitions.
+- [ ] Add ability to create users.
+- [ ] Add ability for human-to-human games.
+- [ ] Add ability to promote to other pieces (can only promote to queen for now).

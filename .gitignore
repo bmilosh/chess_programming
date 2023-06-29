@@ -5,6 +5,7 @@ build1/
 node_modules/
 venv/
 myenv/
+staticfiles/
 
 db.sqlite3
 
